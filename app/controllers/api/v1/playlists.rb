@@ -11,25 +11,13 @@ module API
         params do
           requires :title, type: String
           requires :target_id, type: Integer
+          requires :p_type, type: String, values: ["user_type", "group_type"]
         end
-        post "/user", root: :playlists do  #유저 재생목록 추가 api
+        post "", root: :playlists do  #유저/그룹 재생목록 추가 api
           playlist = {
             title: params[:title],
-            ref_id: params[:user_id],
-            p_type: "user_type"
-          }
-          Playlist.create(playlist)
-        end
-
-        params do
-          requires :title, type: String
-          requires :group_id, type: Integer
-        end
-        post "/group", root: :playlists do  #그룹 재생목록 추가 api
-          playlist = {
-            title: params[:title],
-            ref_id: group_id,
-            p_type: "group_type"
+            ref_id: params[:target_id],
+            p_type: params[:p_type]
           }
           Playlist.create(playlist)
         end
@@ -37,12 +25,14 @@ module API
         params do
           requires :song, type: Array[Integer]
           requires :playlist_id, type:Integer
+          requires :user_id, type:Integer
         end
         post "/song", root: :playlists do  #재생목록에 곡 추가 api
           params[:song].each do |song_id|
             info={
               song_id: song_id,
-              playlist_id: params[:playlist_id]
+              playlist_id: params[:playlist_id],
+              user_id: params[:user_id]
             }
             Playlistinfo.create(info)
           end
@@ -79,7 +69,8 @@ module API
           infos = Playlistinfo.where(playlist_id: params[:playlist_id])
           infoArray = Array.new
           infos.each do |info|
-            infoArray << Song.find_by(id: info.song_id) if info.song_id
+            song= Song.find_by(id: info.song_id)
+            infoArray <<  song if song
           end
           return infoArray
         end
