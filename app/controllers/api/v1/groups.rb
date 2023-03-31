@@ -20,6 +20,30 @@ module API
           Group.create(group)
         end
 
+        params do
+          requires :group_id, type: Integer
+          requires :user_id, type: Integer
+        end
+        post "/join", root: :groups do  #사용자가 그룹 참여 api
+          user_group = {
+            group_id:params[:group_id],
+            user_id: params[:user_id]
+          }
+          UserGroup.create(user_group)
+        end
+
+        params do
+          requires :group_id, type: Integer
+          requires :user_id, type: Integer
+        end
+        delete "", root: :groups do  #사용자가 그룹 탈퇴 api
+          UserGroup.delete_by(user_id: params[:user_id],group_id: params[:group_id])
+          ids=Playlist.where(p_type:"group_type", ref_id: params[:group_id]).ids
+          ids.each do |id|
+            Playlistinfo.delete_by(user_id: params[:user_id],playlist_id: id)
+          end
+        end
+
       end
 
     end
