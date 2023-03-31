@@ -22,8 +22,6 @@ ActiveRecord::Schema.define(version: 2023_03_31_183158) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id"
-    t.index ["user_id"], name: "index_groups_on_user_id"
   end
 
   create_table "playlistinfos", charset: "utf8", force: :cascade do |t|
@@ -66,8 +64,6 @@ ActiveRecord::Schema.define(version: 2023_03_31_183158) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.bigint "group_id"
-    t.index ["group_id"], name: "index_users_on_group_id"
   end
 
 end
