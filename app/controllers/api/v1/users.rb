@@ -8,16 +8,10 @@ module API
       namespace :user do
         namespace :register do
           before do
-            @user_mobile_number = UserRegistrationWithMobileNumberService.new(
+            @user_mobile_number = UserService.new(
               params[:name], params[:mobile_number], params[:email], params[:password]
             )
           end
-
-          # set response headers
-          after do
-            header 'Authorization', @user_mobile_number.token
-          end
-
           params do
             requires :name, type: String
             requires :mobile_number, type: String
@@ -28,9 +22,22 @@ module API
             @user_mobile_number.register
           end
         end
-
-        put :verify do
-          current_user.verify(params[:code])
+        namespace :login do
+          before do
+            @login_user = UserService.new(
+              params[:name], params[:mobile_number], params[:email], params[:password]
+            )
+          end
+          after do
+            header 'Authorization', @login_user.token
+          end
+          params do
+            requires :email, type: String
+            requires :password, type: String
+          end
+          post do
+            @login_user.login
+          end
         end
       end
     end

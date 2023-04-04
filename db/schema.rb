@@ -69,7 +69,7 @@ ActiveRecord::Schema.define(version: 2023_04_03_164429) do
     t.string "mobile_number"
     t.string "email"
     t.string "password", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
+    t.string "encrypted_password", default: ""
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

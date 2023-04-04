@@ -1,4 +1,4 @@
-class UserRegistrationWithMobileNumberService
+class UserService
   attr_reader :name, :mobile_number, :email, :password, :encrypted_password, :token
 
   def initialize(name, mobile_number, email, password)
@@ -11,11 +11,15 @@ class UserRegistrationWithMobileNumberService
   def register
     user = User.find_or_initialize_by name: name, mobile_number: mobile_number,
                                       email: email, password: password
-    if user.save
-      @token, payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
-      user.on_jwt_dispatch(@token, payload)
-    end
+    user.save!
+    #TODO: handling exceptions
+  end
+  def login
+    user = User.find_by email: email
+    return unless user.valid_password?(password)
 
-    user.errors.full_messages.inspect
+    @token, payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
+    user.on_jwt_dispatch(@token, payload)
+
   end
 end

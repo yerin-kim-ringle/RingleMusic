@@ -1,4 +1,4 @@
-RSpec.describe V1::UserRegistrationApi, '/api/v1/user/register' do
+RSpec.describe V1::Users, '/api/v1/user/register' do
   let(:mobile_number) { '01234567' }
 
   context 'with phone number' do
