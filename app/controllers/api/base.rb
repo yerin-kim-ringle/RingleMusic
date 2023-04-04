@@ -1,8 +1,16 @@
 module API
   class Base < Grape::API
+    helpers AuthHelpers
+    helpers do
+      def unauthorized_error!
+        error!('Unauthorized', 401)
+      end
+    end
+
     mount API::V1::Songs
     mount API::V1::Playlists
     mount API::V1::Groups
+    mount API::V1::Users
 
     add_swagger_documentation format: :json,
                               hide_documentation_path: false,

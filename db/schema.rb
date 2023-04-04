@@ -10,12 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_03_31_183158) do
+ActiveRecord::Schema.define(version: 2023_04_03_164429) do
 
   create_table "albums", charset: "utf8", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "allowlisted_jwts", charset: "utf8", force: :cascade do |t|
+    t.string "jti", null: false
+    t.string "aud"
+    t.datetime "exp", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["jti"], name: "index_allowlisted_jwts_on_jti", unique: true
+    t.index ["user_id"], name: "index_allowlisted_jwts_on_user_id"
   end
 
   create_table "groups", charset: "utf8", force: :cascade do |t|
@@ -53,17 +64,15 @@ ActiveRecord::Schema.define(version: 2023_03_31_183158) do
     t.index ["playlistinfo_id"], name: "index_songs_on_playlistinfo_id"
   end
 
-  create_table "user_groups", charset: "utf8", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "group_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-  end
-
   create_table "users", charset: "utf8", force: :cascade do |t|
     t.string "name"
+    t.string "mobile_number"
+    t.string "email"
+    t.string "password", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "allowlisted_jwts", "users", on_delete: :cascade
 end
