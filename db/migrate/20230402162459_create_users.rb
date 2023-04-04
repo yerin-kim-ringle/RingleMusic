@@ -5,7 +5,7 @@ class CreateUsers < ActiveRecord::Migration[6.1]
       t.string :mobile_number
       t.string :email
       t.string :password, null: false, default: ""
-      t.string :encrypted_password, null: false, default: ""
+      t.string :encrypted_password, default: ""
       t.timestamps
     end
   end
