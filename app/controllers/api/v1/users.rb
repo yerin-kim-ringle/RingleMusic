@@ -8,7 +8,9 @@ module API
       namespace :user do
         namespace :register do
           before do
-            @user_mobile_number = UserRegistrationWithMobileNumberService.new(params[:mobile_number],params[:email],params[:password],params[:encrypted_password])
+            @user_mobile_number = UserRegistrationWithMobileNumberService.new(
+              params[:name], params[:mobile_number], params[:email], params[:password], params[:encrypted_password]
+            )
           end
 
           # set response headers
@@ -16,6 +18,13 @@ module API
             header 'Authorization', @user_mobile_number.token
           end
 
+          params do
+            requires :name, type: String
+            requires :mobile_number, type: String
+            requires :email, type: String
+            requires :password, type: String
+            requires :encrypted_password, type: String
+          end
           post do
             @user_mobile_number.register
           end
