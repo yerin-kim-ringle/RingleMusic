@@ -61,6 +61,21 @@ module API
           infoArray
         end
 
+        desc "그룹별 사용자 이름 조회" do
+          detail "그룹에 속한 사용자 이름 조회 api. "
+        end
+        params do
+          requires :group_id, type: Integer
+        end
+        get 'user', root: :groups do
+          infos=UserGroup.where(group_id:params[:group_id])
+          infoArray = Array.new
+          infos.each do |info|
+            infoArray << User.find_by(id: info.user_id).name
+          end
+          infoArray
+        end
+
       end
 
     end
