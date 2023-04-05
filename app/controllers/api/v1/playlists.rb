@@ -14,12 +14,14 @@ module API
           requires :p_type, type: String, values: ['user_type', 'group_type']
         end
         post '', root: :playlists do  #유저/그룹 재생목록 추가 api
-          playlist = {
-            title: params[:title],
-            ref_id: params[:target_id],
-            p_type: params[:p_type]
-          }
-          Playlist.create(playlist)
+          if (params[:p_type] == 'group_type' and Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') == nil)
+            playlist = {
+              title: params[:title],
+              ref_id: params[:target_id],
+              p_type: params[:p_type]
+            }
+            Playlist.create(playlist)
+          end
         end
 
         params do
@@ -28,7 +30,7 @@ module API
         end
         post '/song', root: :playlists do #재생목록에 곡 추가 api
           params[:song].each do |song_id|
-            info={
+            info = {
               song_id: song_id,
               playlist_id: params[:playlist_id],
               user_id: current_user.id
@@ -65,7 +67,7 @@ module API
           infos = Playlistinfo.where(playlist_id: params[:playlist_id])
           infoArray = Array.new
           infos.each do |info|
-            song= Song.find_by(id: info.song_id)
+            song = Song.find_by(id: info.song_id)
             infoArray << song if song
           end
           return infoArray
@@ -75,11 +77,11 @@ module API
           requires :group_id, type: Integer
         end
         get '/group', root: :playlists do  #그룹별 재생목록 목록 조회 api
-          Playlist.where(ref_id: params[:target_id], p_type: "group_type")
+          Playlist.where(ref_id: params[:target_id], p_type: 'group_type')
         end
 
         get '/user', root: :playlists do  #유저별 재생목록 목록 조회 api
-          Playlist.where(ref_id: current_user.id, p_type: "user_type")
+          Playlist.where(ref_id: current_user.id, p_type: 'user_type')
         end
 
       end

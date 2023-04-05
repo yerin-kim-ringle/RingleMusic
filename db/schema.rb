@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(version: 2023_04_05_002104) do
     t.string "name"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_groups_on_name", unique: true
   end
 
   create_table "playlistinfos", charset: "utf8", force: :cascade do |t|
