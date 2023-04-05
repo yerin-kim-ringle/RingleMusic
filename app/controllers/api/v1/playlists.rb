@@ -15,18 +15,25 @@ module API
         end
         params do
           requires :title, type: String
-          requires :target_id, type: Integer
+          optional :target_id, type: Integer
           requires :p_type, type: String, values: ['user_type', 'group_type']
         end
         post '', root: :playlists do
-          if (params[:p_type] == 'group_type' and Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') == nil)
+          target_id = if params[:p_type] == 'user_type'
+                        current_user.id
+                      else
+                        params[:target_id]
+                      end
+          unless (params[:p_type] == 'group_type' and Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') == nil)
             playlist = {
               title: params[:title],
-              ref_id: params[:target_id],
+              ref_id: target_id,
               p_type: params[:p_type]
             }
             Playlist.create(playlist)
           end
+
+          Playlist.delete(Playlist.order(:created_at).first) if Playlist.all.count > 100 #100개 초과인지 체크
         end
 
         desc "재생목록에 곡 추가" do
