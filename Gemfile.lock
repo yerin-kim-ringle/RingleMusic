@@ -80,6 +80,7 @@ GEM
       xpath (~> 3.2)
     concurrent-ruby (1.2.2)
     crass (1.0.6)
+    csv (3.2.6)
     date (3.3.3)
     declarative (0.0.20)
     devise (4.9.1)
@@ -113,6 +114,8 @@ GEM
       dry-inflector (~> 0.1, >= 0.1.2)
       dry-logic (~> 1.0, >= 1.0.2)
     erubi (1.12.0)
+    faker (3.1.1)
+      i18n (>= 1.8.11, < 2)
     ffi (1.15.5)
     globalid (1.1.0)
       activesupport (>= 5.0)
@@ -344,8 +347,10 @@ DEPENDENCIES
   bootsnap (>= 1.4.4)
   byebug
   capybara (>= 3.26)
+  csv
   devise
   devise-jwt
+  faker
   grape
   grape-swagger
   grape-swagger-entity (~> 0.3)
