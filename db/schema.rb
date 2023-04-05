@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_03_164429) do
+ActiveRecord::Schema.define(version: 2023_04_05_002104) do
 
   create_table "albums", charset: "utf8", force: :cascade do |t|
     t.string "name"
@@ -59,9 +59,14 @@ ActiveRecord::Schema.define(version: 2023_04_03_164429) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "album_id"
-    t.bigint "playlistinfo_id"
     t.index ["album_id"], name: "index_songs_on_album_id"
-    t.index ["playlistinfo_id"], name: "index_songs_on_playlistinfo_id"
+  end
+
+  create_table "user_groups", charset: "utf8", force: :cascade do |t|
+    t.string "user_id"
+    t.string "group_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "users", charset: "utf8", force: :cascade do |t|

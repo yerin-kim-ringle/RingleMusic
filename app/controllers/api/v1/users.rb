@@ -5,8 +5,8 @@ module API
       format :json
       prefix :api
 
-      namespace :user do
-        namespace :register do
+      namespace :users do
+        namespace :register do # 회원가입
           before do
             @user_mobile_number = UserService.new(
               params[:name], params[:mobile_number], params[:email], params[:password]
@@ -22,7 +22,7 @@ module API
             @user_mobile_number.register
           end
         end
-        namespace :login do
+        namespace :login do # 로그인
           before do
             @login_user = UserService.new(
               params[:name], params[:mobile_number], params[:email], params[:password]
