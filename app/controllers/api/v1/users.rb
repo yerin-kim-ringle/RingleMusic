@@ -12,6 +12,11 @@ module API
               params[:name], params[:mobile_number], params[:email], params[:password]
             )
           end
+          desc '회원가입' do
+            detail "회원가입 api. \n
+            - email 중복 불가능
+            - password 6자 이상"
+          end
           params do
             requires :name, type: String
             requires :mobile_number, type: String
@@ -22,6 +27,7 @@ module API
             @user_mobile_number.register
           end
         end
+
         namespace :login do # 로그인
           before do
             @login_user = UserService.new(
@@ -30,6 +36,10 @@ module API
           end
           after do
             header 'Authorization', @login_user.token
+          end
+          desc '로그인' do
+            detail "로그인 api. \n
+            - 반환값 Authorization이 토큰 값"
           end
           params do
             requires :email, type: String

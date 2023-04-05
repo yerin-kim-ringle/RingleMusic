@@ -15,8 +15,13 @@ module API
         song
       end
 
+
       resource :songs do
         desc 'Search Songs'
+
+        desc "정확도순 검색" do
+          detail "정확도순 검색 api."
+        end
         params do
           optional :name, type: String
         end
@@ -24,19 +29,23 @@ module API
           Songs.find_song(params[:name])
         end
 
-
+        desc "최신순 검색" do
+          detail "최신순 검색 api."
+        end
         params do
           optional :name, type: String
         end
-        get '/recent', root: :songs do # 최신순
+        get '/recent', root: :songs do
           return Songs.find_song(params[:name]).order(:created_at)
         end
 
-
+        desc "인기순 검색" do
+          detail "인기순 검색 api."
+        end
         params do
           optional :name, type: String
         end
-        get '/popular', root: :songs do # 인기순
+        get '/popular', root: :songs do
           return Songs.find_song(params[:name]).order(like: :desc)
         end
       end

@@ -8,12 +8,17 @@ module API
       resource :playlists do
         desc 'Manage Songs'
 
+        desc "유저/그룹 재생목록 추가" do
+          detail "유저/그룹 재생목록 추가 api.\n
+          - 유저라면 헤더에 토큰 필요\n
+          - user_type, group_type 중에 type 선택필요"
+        end
         params do
           requires :title, type: String
           requires :target_id, type: Integer
           requires :p_type, type: String, values: ['user_type', 'group_type']
         end
-        post '', root: :playlists do  #유저/그룹 재생목록 추가 api
+        post '', root: :playlists do
           if (params[:p_type] == 'group_type' and Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') == nil)
             playlist = {
               title: params[:title],
@@ -24,11 +29,15 @@ module API
           end
         end
 
+        desc "재생목록에 곡 추가" do
+          detail "재생목록에 곡 추가 api.\n
+          - song은 여러개의 song_id로 Array[Integer] Type"
+        end
         params do
           requires :song, type: Array[Integer]
           requires :playlist_id, type: Integer
         end
-        post '/song', root: :playlists do #재생목록에 곡 추가 api
+        post '/song', root: :playlists do
           params[:song].each do |song_id|
             info = {
               song_id: song_id,
@@ -39,10 +48,13 @@ module API
           end
         end
 
+        desc "재생목록 삭제" do
+          detail "재생목록 삭제 api."
+        end
         params do
           requires :playlist_id, type: Integer
         end
-        delete '', root: :playlists do #재생목록 삭제 api
+        delete '', root: :playlists do
           Playlist.delete_by(id: params[:playlist_id])
           infos = Playlistinfo.where(playlist_id: params[:playlist_id])
           infos.each do |info|
@@ -50,20 +62,27 @@ module API
           end
         end
 
+        desc "재생목록의 곡 삭제" do
+          detail "재생목록의 곡 삭제 api.\n
+          - song은 여러개의 song_id로 Array[Integer] Type"
+        end
         params do
           requires :song, type: Array[Integer]
           requires :playlist_id, type: Integer
         end
-        delete '/song', root: :playlists do #재생목록에 곡 삭제 api
+        delete '/song', root: :playlists do
           params[:song].each do |song_id|
             Playlistinfo.delete_by(song_id:song_id, playlist_id: params[:playlist_id])
           end
         end
 
+        desc "재생목록 조회" do
+          detail "재생목록 조회 api."
+        end
         params do
           requires :playlist_id, type: Integer
         end
-        get '/song', root: :playlists do #재생목록 조회 api
+        get '/song', root: :playlists do
           infos = Playlistinfo.where(playlist_id: params[:playlist_id])
           infoArray = Array.new
           infos.each do |info|
@@ -73,14 +92,20 @@ module API
           return infoArray
         end
 
+        desc "그룹별 재생목록 목록 조회" do
+          detail "그룹별 재생목록 목록 조회 api."
+        end
         params do
           requires :group_id, type: Integer
         end
-        get '/group', root: :playlists do  #그룹별 재생목록 목록 조회 api
+        get '/group', root: :playlists do
           Playlist.where(ref_id: params[:target_id], p_type: 'group_type')
         end
 
-        get '/user', root: :playlists do  #유저별 재생목록 목록 조회 api
+        desc "유저별 재생목록 목록 조회" do
+          detail "유저별 재생목록 목록 조회 api."
+        end
+        get '/user', root: :playlists do
           Playlist.where(ref_id: current_user.id, p_type: 'user_type')
         end
 
