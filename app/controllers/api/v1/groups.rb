@@ -49,6 +49,18 @@ module API
           end
         end
 
+        desc "사용자가 속한 그룹 조회" do
+          detail "사용자가 속한 그룹 조회 api. 헤더에 사용자 토큰 필요"
+        end
+        get '', root: :groups do
+          groups=UserGroup.where(user_id:current_user.id)
+          infoArray = Array.new
+          groups.each do |group|
+            infoArray << Group.find_by(id: group.id)
+          end
+          infoArray
+        end
+
       end
 
     end
