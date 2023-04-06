@@ -8,7 +8,7 @@ module API
       resource :playlists do
         desc 'Manage Songs'
 
-        desc "유저/그룹 재생목록 추가" do
+        desc '유저/그룹 재생목록 추가' do
           detail "유저/그룹 재생목록 추가 api.\n
           - 유저라면 헤더에 토큰 필요\n
           - user_type, group_type 중에 type 선택필요"
@@ -36,7 +36,7 @@ module API
           Playlist.delete(Playlist.order(:created_at).first) if Playlist.all.count > 100 #100개 초과인지 체크
         end
 
-        desc "재생목록에 곡 추가" do
+        desc '재생목록에 곡 추가' do
           detail "재생목록에 곡 추가 api.\n
           - song은 여러개의 song_id로 Array[Integer] Type"
         end
@@ -55,21 +55,18 @@ module API
           end
         end
 
-        desc "재생목록 삭제" do
-          detail "재생목록 삭제 api."
+        desc '재생목록 삭제' do
+          detail '재생목록 삭제 api.'
         end
         params do
           requires :playlist_id, type: Integer
         end
         delete '', root: :playlists do
           Playlist.delete_by(id: params[:playlist_id])
-          infos = Playlistinfo.where(playlist_id: params[:playlist_id])
-          infos.each do |info|
-            Playlistinfo.delete(info)
-          end
+          Playlistinfo.delete_by(playlist_id: params[:playlist_id])
         end
 
-        desc "재생목록의 곡 삭제" do
+        desc '재생목록의 곡 삭제' do
           detail "재생목록의 곡 삭제 api.\n
           - song은 여러개의 song_id로 Array[Integer] Type"
         end
@@ -78,13 +75,11 @@ module API
           requires :playlist_id, type: Integer
         end
         delete '/song', root: :playlists do
-          params[:song].each do |song_id|
-            Playlistinfo.delete_by(song_id:song_id, playlist_id: params[:playlist_id])
-          end
+          Playlistinfo.delete_by("playlistinfos.playlist_id = ? and playlistinfos.song_id IN (?)",params[:playlist_id],params[:song])
         end
 
-        desc "재생목록 조회" do
-          detail "재생목록 조회 api."
+        desc '재생목록 조회' do
+          detail '재생목록 조회 api.'
         end
         params do
           requires :playlist_id, type: Integer
@@ -92,17 +87,14 @@ module API
           optional :per_page, type: Integer
         end
         get '/song', root: :playlists do
-          infos = Playlistinfo.where(playlist_id: params[:playlist_id])
-          infoArray = Array.new
-          infos.each do |info|
-            song = Song.find_by(id: info.song_id)
-            infoArray << song if song
-          end
-          return Kaminari.paginate_array(infoArray).page(params[:page]).per(params[:per_page])
+          Song
+            .joins('INNER JOIN playlistinfos ON playlistinfos.song_id=songs.id')
+            .where('playlistinfos.playlist_id = ?', params[:playlist_id])
+            .page(params[:page]).per(params[:per_page])
         end
 
-        desc "그룹별 재생목록 목록 조회" do
-          detail "그룹별 재생목록 목록 조회 api."
+        desc '그룹별 재생목록 목록 조회' do
+          detail '그룹별 재생목록 목록 조회 api.'
         end
         params do
           requires :group_id, type: Integer
@@ -113,8 +105,8 @@ module API
           Playlist.where(ref_id: params[:group_id], p_type: 'group_type').page(params[:page]).per(params[:per_page])
         end
 
-        desc "유저별 재생목록 목록 조회" do
-          detail "유저별 재생목록 목록 조회 api."
+        desc '유저별 재생목록 목록 조회' do
+          detail '유저별 재생목록 목록 조회 api.'
         end
         params do
           optional :page, type: Integer
