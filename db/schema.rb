@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_04_05_002104) do
+ActiveRecord::Schema.define(version: 2023_04_06_184236) do
 
   create_table "albums", charset: "utf8", force: :cascade do |t|
     t.string "name"
@@ -34,6 +34,14 @@ ActiveRecord::Schema.define(version: 2023_04_05_002104) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_groups_on_name", unique: true
+  end
+
+  create_table "likes", charset: "utf8", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "song_id"
+    t.boolean "status", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "playlistinfos", charset: "utf8", force: :cascade do |t|

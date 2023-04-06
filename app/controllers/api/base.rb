@@ -11,6 +11,7 @@ module API
     mount API::V1::Playlists
     mount API::V1::Groups
     mount API::V1::Users
+    mount API::V1::Likes
 
     add_swagger_documentation format: :json,
                               hide_documentation_path: false,
@@ -23,7 +24,8 @@ module API
                                 { name: "playlists", description: "재생목록 API" },
                                 { name: "songs", description: "음원 API" },
                                 { name: "groups", description: "그룹 API" },
-                                { name: "users", description: "사용자 API" }
+                                { name: "users", description: "사용자 API" },
+                                { name: "likes", description: "좋아요 API" }
                               ]
   end
 
