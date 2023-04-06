@@ -24,9 +24,11 @@ module API
         end
         params do
           optional :name, type: String
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get '', root: :songs do # 정확도 순
-          Songs.find_song(params[:name])
+          Songs.find_song(params[:name]).page(params[:page]).per(params[:per_page])
         end
 
         desc "최신순 검색" do
@@ -34,9 +36,11 @@ module API
         end
         params do
           optional :name, type: String
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get '/recent', root: :songs do
-          return Songs.find_song(params[:name]).order(:created_at)
+          return Songs.find_song(params[:name]).order(:created_at).page(params[:page]).per(params[:per_page])
         end
 
         desc "인기순 검색" do
@@ -44,9 +48,11 @@ module API
         end
         params do
           optional :name, type: String
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get '/popular', root: :songs do
-          return Songs.find_song(params[:name]).order(like: :desc)
+          return Songs.find_song(params[:name]).order(like: :desc).page(params[:page]).per(params[:per_page])
         end
       end
     end

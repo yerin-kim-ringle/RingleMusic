@@ -52,13 +52,17 @@ module API
         desc "사용자가 속한 그룹 조회" do
           detail "사용자가 속한 그룹 조회 api. 헤더에 사용자 토큰 필요"
         end
+        params do
+          optional :page, type: Integer
+          optional :per_page, type: Integer
+        end
         get '', root: :groups do
           groups=UserGroup.where(user_id:current_user.id)
           infoArray = Array.new
           groups.each do |group|
             infoArray << Group.find_by(id: group.id)
           end
-          infoArray
+          return Kaminari.paginate_array(infoArray).page(params[:page]).per(params[:per_page])
         end
 
         desc "그룹별 사용자 이름 조회" do
@@ -66,6 +70,8 @@ module API
         end
         params do
           requires :group_id, type: Integer
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get 'user', root: :groups do
           infos=UserGroup.where(group_id:params[:group_id])
@@ -73,7 +79,7 @@ module API
           infos.each do |info|
             infoArray << User.find_by(id: info.user_id).name
           end
-          infoArray
+          return Kaminari.paginate_array(infoArray).page(params[:page]).per(params[:per_page])
         end
 
       end

@@ -88,6 +88,8 @@ module API
         end
         params do
           requires :playlist_id, type: Integer
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get '/song', root: :playlists do
           infos = Playlistinfo.where(playlist_id: params[:playlist_id])
@@ -96,7 +98,7 @@ module API
             song = Song.find_by(id: info.song_id)
             infoArray << song if song
           end
-          return infoArray
+          return Kaminari.paginate_array(infoArray).page(params[:page]).per(params[:per_page])
         end
 
         desc "그룹별 재생목록 목록 조회" do
@@ -104,16 +106,22 @@ module API
         end
         params do
           requires :group_id, type: Integer
+          optional :page, type: Integer
+          optional :per_page, type: Integer
         end
         get '/group', root: :playlists do
-          Playlist.where(ref_id: params[:target_id], p_type: 'group_type')
+          Playlist.where(ref_id: params[:group_id], p_type: 'group_type').page(params[:page]).per(params[:per_page])
         end
 
         desc "유저별 재생목록 목록 조회" do
           detail "유저별 재생목록 목록 조회 api."
         end
+        params do
+          optional :page, type: Integer
+          optional :per_page, type: Integer
+        end
         get '/user', root: :playlists do
-          Playlist.where(ref_id: current_user.id, p_type: 'user_type')
+          Playlist.where(ref_id: current_user.id, p_type: 'user_type').page(params[:page]).per(params[:per_page])
         end
 
       end
