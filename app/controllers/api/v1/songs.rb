@@ -19,40 +19,25 @@ module API
       resource :songs do
         desc 'Search Songs'
 
-        desc "정확도순 검색" do
-          detail "정확도순 검색 api."
+        desc '곡 검색' do
+          detail "곡 검색 api. \n
+            기본은 정확도순, option으로 recent(최신순) popular(인기순) 지정 가능 "
         end
         params do
           optional :name, type: String
           optional :page, type: Integer
           optional :per_page, type: Integer
+          optional :option, type: String, values: %w[recent popular]
         end
-        get '', root: :songs do # 정확도 순
-          Songs.find_song(params[:name]).page(params[:page]).per(params[:per_page])
-        end
-
-        desc "최신순 검색" do
-          detail "최신순 검색 api."
-        end
-        params do
-          optional :name, type: String
-          optional :page, type: Integer
-          optional :per_page, type: Integer
-        end
-        get '/recent', root: :songs do
-          return Songs.find_song(params[:name]).order(:created_at).page(params[:page]).per(params[:per_page])
-        end
-
-        desc "인기순 검색" do
-          detail "인기순 검색 api."
-        end
-        params do
-          optional :name, type: String
-          optional :page, type: Integer
-          optional :per_page, type: Integer
-        end
-        get '/popular', root: :songs do
-          return Songs.find_song(params[:name]).order(like: :desc).page(params[:page]).per(params[:per_page])
+        get '', root: :songs do
+          case params[:option]
+          when 'recent' # 최신순
+            Songs.find_song(params[:name]).order(created_at: :desc).page(params[:page]).per(params[:per_page]) 
+          when 'popular' # 인기순
+            Songs.find_song(params[:name]).order(like: :desc).page(params[:page]).per(params[:per_page]) 
+          else # 정확도순
+            Songs.find_song(params[:name]).page(params[:page]).per(params[:per_page])
+          end
         end
       end
     end
