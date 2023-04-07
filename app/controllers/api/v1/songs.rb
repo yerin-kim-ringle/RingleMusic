@@ -39,7 +39,7 @@ module API
 
         desc '곡 검색' do
           detail "곡 검색 api. \n
-            기본은 정확도순, option으로 recent(최신순) popular(인기순) 지정 가능 "
+            기본은 정확도순, filter로 recent(최신순) popular(인기순) 지정 가능 "
         end
         params do
           optional :name, type: String
