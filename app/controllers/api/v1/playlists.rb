@@ -16,23 +16,29 @@ module API
         params do
           requires :title, type: String
           optional :target_id, type: Integer
-          requires :p_type, type: String, values: ['user_type', 'group_type']
+          requires :p_type, type: String, values: %w[user_type group_type]
         end
         post '', root: :playlists do
-          target_id = if params[:p_type] == 'user_type'
-                        current_user.id
-                      else
-                        params[:target_id]
-                      end
-          unless (params[:p_type] == 'group_type' and Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') == nil)
+          target_id = params[:p_type] == 'user_type' ? current_user.id : params[:target_id]
+          if (params[:p_type] == 'group_type') && UserGroup.find_by(user_id: current_user.id, group_id: target_id).nil?
+            return {
+              success: false,
+              message: "그룹에 속한 유저만 추가할 수 있습니다."
+            }
+          end
+          if !((params[:p_type] == 'group_type') && (Playlist.find_by(ref_id: params[:target_id], p_type: 'group_type') != nil))
             playlist = {
               title: params[:title],
               ref_id: target_id,
               p_type: params[:p_type]
             }
             Playlist.create(playlist)
+          else
+            return {
+              success: false,
+              message: "이미 그룹 플레이리스트가 존재합니다."
+            }
           end
-
           Playlist.delete(Playlist.order(:created_at).first) if Playlist.all.count > 100 #100개 초과인지 체크
         end
 
@@ -45,6 +51,13 @@ module API
           requires :playlist_id, type: Integer
         end
         post '/song', root: :playlists do
+          group_id = Playlist.find_by(p_type: "group_type", id:params[:playlist_id]).ref_id
+          if UserGroup.find_by(user_id: current_user.id, group_id: group_id) == nil
+            return {
+              success: false,
+              message: "그룹에 속한 유저만 추가할 수 있습니다."
+            }
+          end
           params[:song].each do |song_id|
             info = {
               song_id: song_id,
@@ -75,7 +88,14 @@ module API
           requires :playlist_id, type: Integer
         end
         delete '/song', root: :playlists do
-          Playlistinfo.delete_by("playlistinfos.playlist_id = ? and playlistinfos.song_id IN (?)",params[:playlist_id],params[:song])
+          group_id = Playlist.find_by(p_type: "group_type", id:params[:playlist_id]).ref_id
+          if UserGroup.find_by(user_id: current_user.id, group_id: group_id) == nil
+            return {
+              success: false,
+              message: "그룹에 속한 유저만 삭제할 수 있습니다."
+            }
+          end
+          Playlistinfo.delete_by("playlistinfos.playlist_id = ? and playlistinfos.song_id IN (?)", params[:playlist_id], params[:song])
         end
 
         desc '재생목록 조회' do
@@ -93,8 +113,8 @@ module API
             .page(params[:page]).per(params[:per_page])
         end
 
-        desc '그룹별 재생목록 목록 조회' do
-          detail '그룹별 재생목록 목록 조회 api.'
+        desc '그룹별 재생목록 조회' do
+          detail '그룹별 재생목록 조회 api.'
         end
         params do
           requires :group_id, type: Integer
@@ -102,7 +122,7 @@ module API
           optional :per_page, type: Integer
         end
         get '/group', root: :playlists do
-          Playlist.where(ref_id: params[:group_id], p_type: 'group_type').page(params[:page]).per(params[:per_page])
+          Playlist.find_by(ref_id: params[:group_id], p_type: 'group_type')
         end
 
         desc '유저별 재생목록 목록 조회' do
