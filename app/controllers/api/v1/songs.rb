@@ -49,7 +49,9 @@ module API
         get '', root: :songs do
           songs = Songs.search_song(params)
           songs = Songs.search_album(params) if songs.count.zero?
-          songs
+
+          Rails.logger.info("times took (in milliseconds): "+ songs.took.to_s)
+          songs.response
         end
       end
     end
