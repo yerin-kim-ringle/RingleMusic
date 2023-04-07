@@ -14,24 +14,24 @@ module API
         }
       end
 
-      def self.get_query(filter)
+      def self.get_query(params)
         query = {
           fields: %w[name^2 artist_name],
           load: false,
           misspellings: { below: 2 },
-          order: get_hash[filter],
-          page: 1, per_page: 10
+          order: get_hash[params[:filter]],
+          page: params[:page], per_page: params[:per_page]
         }
       end
 
-      def self.search_song(name, filter)
-        query = get_query(filter)
-        !name.nil? ? Song.search(name, query) : Song.search(query)
+      def self.search_song(params)
+        query = get_query(params)
+        !name.nil? ? Song.search(params[:name], query) : Song.search(query)
       end
 
-      def self.search_album(name, filter)
-        query = get_query(filter)
-        !name.nil? ? Album.search(name, query) : Album.search(query)
+      def self.search_album(params)
+        query = get_query(params)
+        !name.nil? ? Album.search(params[:name], query) : Album.search(query)
 
       end
       resource :songs do
@@ -48,8 +48,8 @@ module API
           optional :filter, type: String, values: %w[recent popular]
         end
         get '', root: :songs do
-          songs = Songs.search_song(params[:name], params[:filter])
-          songs = Songs.search_album(params[:name], params[:filter]) if songs.count.zero?
+          songs = Songs.search_song(params)
+          songs = Songs.search_album(params) if songs.count.zero?
           songs
         end
       end
