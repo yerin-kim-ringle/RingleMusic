@@ -1,3 +1,4 @@
+
 module API
   module V1
     class Songs < Grape::API
@@ -5,17 +6,34 @@ module API
       format :json
       prefix :api
 
-      def self.find_song(name)
-        song =  Song.where('name LIKE ?',"%#{name}%") # 제목으로
-        song = Song.where('artist_name LIKE ?',"%#{name}%") unless song.exists? # 아티스트명으로
-        unless song.exists? # 앨범명으로
-          album = Album.find_by('name LIKE ?',"%#{name}%")
-          song = Song.where(album_id: album.id) if album
-        end
-        song
+      def self.get_hash
+        hash = {
+          nil => nil,
+          'popular' => { like: :desc },
+          'recent' => { created_at: :desc }
+        }
       end
 
+      def self.get_query(filter)
+        query = {
+          fields: %w[name^2 artist_name],
+          load: false,
+          misspellings: { below: 2 },
+          order: get_hash[filter],
+          page: 1, per_page: 10
+        }
+      end
 
+      def self.search_song(name, filter)
+        query = get_query(filter)
+        !name.nil? ? Song.search(name, query) : Song.search(query)
+      end
+
+      def self.search_album(name, filter)
+        query = get_query(filter)
+        !name.nil? ? Album.search(name, query) : Album.search(query)
+
+      end
       resource :songs do
         desc 'Search Songs'
 
@@ -27,17 +45,12 @@ module API
           optional :name, type: String
           optional :page, type: Integer
           optional :per_page, type: Integer
-          optional :option, type: String, values: %w[recent popular]
+          optional :filter, type: String, values: %w[recent popular]
         end
         get '', root: :songs do
-          case params[:option]
-          when 'recent' # 최신순
-            Songs.find_song(params[:name]).order(created_at: :desc).page(params[:page]).per(params[:per_page]) 
-          when 'popular' # 인기순
-            Songs.find_song(params[:name]).order(like: :desc).page(params[:page]).per(params[:per_page]) 
-          else # 정확도순
-            Songs.find_song(params[:name]).page(params[:page]).per(params[:per_page])
-          end
+          songs = Songs.search_song(params[:name], params[:filter])
+          songs = Songs.search_album(params[:name], params[:filter]) if songs.count.zero?
+          songs
         end
       end
     end

@@ -116,6 +116,10 @@ GEM
     erubi (1.12.0)
     faker (3.1.1)
       i18n (>= 1.8.11, < 2)
+    faraday (2.7.4)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (3.0.2)
     ffi (1.15.5)
     globalid (1.1.0)
       activesupport (>= 5.0)
@@ -139,6 +143,7 @@ GEM
     grape-swagger-representable (0.2.2)
       grape-swagger (>= 0.31.0)
       representable
+    hashie (5.0.0)
     i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jbuilder (2.11.5)
@@ -192,6 +197,14 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.14.2-arm64-darwin)
       racc (~> 1.4)
+    opensearch-api (2.2.0)
+      multi_json
+    opensearch-ruby (2.1.0)
+      opensearch-api (~> 2.1)
+      opensearch-transport (~> 2.0)
+    opensearch-transport (2.1.0)
+      faraday (>= 1.0, < 3)
+      multi_json
     orm_adapter (0.5.0)
     parallel (1.22.1)
     parser (3.2.1.0)
@@ -286,6 +299,7 @@ GEM
       rubocop (~> 1.33)
       rubocop-capybara (~> 2.17)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     sass-rails (6.0.0)
       sassc-rails (~> 2.1, >= 2.1.1)
@@ -297,6 +311,9 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    searchkick (5.2.2)
+      activemodel (>= 5.2)
+      hashie
     selenium-webdriver (4.8.5)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -372,6 +389,7 @@ DEPENDENCIES
   kaminari
   listen (~> 3.3)
   mysql2
+  opensearch-ruby
   puma (~> 5.0)
   rack-cors
   rack-mini-profiler (~> 2.0)
@@ -379,6 +397,7 @@ DEPENDENCIES
   rspec-rails
   rubocop-rspec
   sass-rails (>= 6)
+  searchkick
   selenium-webdriver (>= 4.0.0.rc1)
   spring
   spring-commands-rspec
