@@ -26,25 +26,24 @@ module API
 
       def self.search_song(params)
         query = get_query(params)
-        !name.nil? ? Song.search(params[:name], query) : Song.search(query)
+        !params[:name].nil? ? Song.search(params[:name], query) : Song.search(query)
       end
 
       def self.search_album(params)
         query = get_query(params)
-        !name.nil? ? Album.search(params[:name], query) : Album.search(query)
+        !params[:name].nil? ? Album.search(params[:name], query) : Album.search(query)
 
       end
       resource :songs do
         desc 'Search Songs'
-
         desc '곡 검색' do
           detail "곡 검색 api. \n
             기본은 정확도순, filter로 recent(최신순) popular(인기순) 지정 가능 "
         end
         params do
           optional :name, type: String
-          optional :page, type: Integer
-          optional :per_page, type: Integer
+          optional :page, type: Integer, default: 0
+          optional :per_page, type: Integer, default: 10
           optional :filter, type: String, values: %w[recent popular]
         end
         get '', root: :songs do
